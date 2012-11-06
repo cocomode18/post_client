@@ -4,6 +4,11 @@
 application/config/config.php
 application/config/database.php
 index.php
+*/config/development
+*/logs/log-*.php
+*/logs/!index.html
+*/cache/*
+*/cache/!index.html
 
 # Global
 *.swp
