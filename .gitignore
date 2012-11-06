@@ -1,0 +1,20 @@
+##########GLOBAL###########
+#codeigniter
+#these files need to be copied when installing application
+application/config/config.php
+application/config/database.php
+index.php
+
+# Global
+*.swp
+*.swo
+*.swn
+
+# Global/OSX.gitignore
+.DS_Store
+
+# Global/codeigniter
+*/logs/log-*.php
+*/logs/!index.html
+*/cache/*
+*/cache/!index.html
