@@ -43,10 +43,10 @@ class Request_Model extends CI_Model
 		if($data) $headers[] = 'Content-Length: '. strlen(http_build_query($data));
 		if($this->_basicAuth['user'] && $this->_basicAuth['pass'])
 			$headers[] = 'Authorization: Basic '.base64_encode($this->_basicAuth['user'].':'.$this->_basicAuth['pass']);
-
 		$options = array(
 				'http' => array(
 						'method' => 'POST',
+						'content' => http_build_query($data),
 						'header' => implode("\r\n", $headers),
 					)
 				);
