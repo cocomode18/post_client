@@ -8,14 +8,17 @@ class Post extends CI_Controller
 
 	private $_requestUrl;
 	private $_postKeyVals;
+	private $_authUser;
+	private $_authPass;
 	private $_sendView;
-	const	NUM_POST=6;
+	const	NUM_POST=8;
 
 	public function __construct()
 	{
 		parent::__construct();
 		$this->_requestUrl = '';
 		$this->setPostVal();
+		$this->setSendView();
 	}
 
 	public function index()
@@ -26,14 +29,14 @@ class Post extends CI_Controller
 
 	public function sendAction()
 	{
-		$RequestModel = new Request_Model($this->_requestUrl,$this->_postKeyVals);
-		$requestResult = $RequestModel->analyze();
-		if($requestResult['status'] === 'ok'){ 
+		$RequestModel = new Request_Model();
+		$requestResult = $RequestModel->analyze($this->_requestUrl,$this->_postKeyVals,$this->_authUser,$this->_authPass);
+		if($requestResult){ 
 			$this->_sendView['urlError'] = false;
-			$this->_sendView['requestContent'] = $requestResult['content'];
+			$this->_sendView['requestContent'] = $requestResult;
 
 			$JsonAnalyze = new Json_Analyze();
-			$dumpArray = $JsonAnalyze->getJsonArray($requestResult['content']);
+			$dumpArray = $JsonAnalyze->getJsonArray($requestResult);
 			if($dumpArray !== false){ var_dump($dumpArray); }
 		}else{
 			$this->_sendView['urlError'] = true;
@@ -59,7 +62,15 @@ class Post extends CI_Controller
 			$this->_postKeyVals['keys'][$i] = ($this->input->post("key$i"))? :'';
 			$this->_postKeyVals['vals'][$i] = ($this->input->post("val$i"))? :'';
 		}
+		$this->_authUser = $this->input->post('authUser');
+		$this->_authPass = $this->input->post('authPass');
+	}
+
+	private function setSendView()
+	{
 		$this->_sendView['inputKeyVal'] = $this->generateInputField();
 		$this->_sendView['inputUrl'] = $this->_requestUrl;
+		$this->_sendView['authUser'] = $this->_authUser;
+		$this->_sendView['authPass'] = $this->_authPass;
 	}
 }
