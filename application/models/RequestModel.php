@@ -36,6 +36,11 @@ class Request_Model extends CI_Model
 
 	private function sendPostRequest($data)
 	{
+		var_dump($data);
+	}
+/*
+	private function sendPostRequest($data)
+	{
 		$data = http_build_query($data);
 		$url = parse_url($this->_requestUrl);
 
@@ -78,4 +83,5 @@ class Request_Model extends CI_Model
 				'content' => $content
 			);
 	}
+*/
 }
