@@ -6,16 +6,19 @@ class Request_Model extends CI_Model
 {
 	private $_requestUrl;
 	private $_postKeyVals;
+	private $_basicAuth;
 
-	public function __construct($requestUrl,$postKeyVals)
+	public function __construct()
 	{
 		parent::__construct();
-		$this->_requestUrl = $requestUrl;
-		$this->_postKeyVals = $postKeyVals;
 	}
 
-	public function analyze()
+	public function analyze($requestUrl,$postKeyVals,$authUser=false,$authPass=false)
 	{
+		if(!$requestUrl) return false;
+		$this->_requestUrl = $requestUrl;
+		$this->_postKeyVals = $postKeyVals;
+		$this->_basicAuth = array('user'=>$authUser,'pass'=>$authPass);
 		$postData = $this->generatePostData();
 		$result = $this->sendPostRequest($postData);
 		return $result;
@@ -36,52 +39,18 @@ class Request_Model extends CI_Model
 
 	private function sendPostRequest($data)
 	{
-		var_dump($data);
-	}
-/*
-	private function sendPostRequest($data)
-	{
-		$data = http_build_query($data);
-		$url = parse_url($this->_requestUrl);
+		$headers[] = 'Content-Type: application/x-www-form-urlencoded';
+		if($data) $headers[] = 'Content-Length: '. strlen(http_build_query($data));
+		if($this->_basicAuth['user'] && $this->_basicAuth['pass'])
+			$headers[] = 'Authorization: Basic '.base64_encode($this->_basicAuth['user'].':'.$this->_basicAuth['pass']);
 
-		if ($url['scheme'] != 'http') { 
-			return false;
-		}
-
-		$host = $url['host'];
-		$path = $url['path'];
-		$fp = fsockopen($host, 80, $errno, $errstr, 30);
-
-		if ($fp){
-			fputs($fp, "POST $path HTTP/1.1\r\n");
-			fputs($fp, "Host: $host\r\n");
-			fputs($fp, "Content-type: application/x-www-form-urlencoded\r\n");
-			fputs($fp, "Content-length: ". strlen($data) ."\r\n");
-			fputs($fp, "Connection: close\r\n\r\n");
-			fputs($fp, $data);
-
-			$result = ''; 
-			while(!feof($fp)) {
-				$result .= fgets($fp, 128);
-			}
-		} else { 
-			return array(
-					'status' => 'err', 
-					'error' => "$errstr ($errno)"
+		$options = array(
+				'http' => array(
+						'method' => 'POST',
+						'header' => implode("\r\n", $headers),
+					)
 				);
-		}
-
-		fclose($fp);
-		$result = explode("\r\n\r\n", $result, 2);
-
-		$header = isset($result[0]) ? $result[0] : '';
-		$content = isset($result[1]) ? $result[1] : '';
-
-		return array(
-				'status' => 'ok',
-				'header' => $header,
-				'content' => $content
-			);
+		$contents = file_get_contents($this->_requestUrl, false, stream_context_create($options));
+		return $contents;
 	}
-*/
 }

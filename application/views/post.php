@@ -13,6 +13,11 @@
 <input class="span5" type="text" id="request_url" name="request_url" value="<?php echo $inputUrl;?>" placeholder="http://">
 <button type="submit" class="btn btn-primary">Request</button>
 <br/><br/>
+<h5>Basic Auth</h5>
+<input type="text" class="input-small" name="authUser" value="<?php echo $authUser;?>" placeholder="User">
+<input type="password" class="input-small" name="authPass" value="<?php echo $authPass;?>" placeholder="Password">
+<br/><br/>
+<br/><br/>
 <button class="btn" onClick="clearFormAll()">Clear</button>
 </div>
 </div>
